@@ -5,7 +5,7 @@ namespace NoSillyReborn;
 
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 2;
 
     /// <summary>Master switch – when false the intercept hook is installed but no replacements fire.</summary>
     public bool IsEnabled { get; set; } = true;
