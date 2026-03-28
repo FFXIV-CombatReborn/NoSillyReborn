@@ -1,0 +1,7 @@
+# Mark the embedded game-data resource as generated so diff tools skip it.
+# The file is a verbatim copy of RSR's Resources.resx and is updated as a unit
+# whenever the upstream game-data is refreshed.
+NoSillyReborn.SourceGenerators/Properties/Resources.resx  linguist-generated=true  -diff
+
+# Auto-generated C# resource accessor – do not diff or review
+NoSillyReborn.SourceGenerators/Properties/Resources.Designer.cs  linguist-generated=true  -diff
