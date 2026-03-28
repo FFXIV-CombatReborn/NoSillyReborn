@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Dalamud.NET.Sdk/14.0.2">
+  <PropertyGroup>
+    <Description>No Silly Reborn intercepts your action inputs during combat and replaces incorrect actions with the correct ones based on your current job state</Description>
+    <Author>The Combat Reborn Team</Author>
+    <Name>No Silly Reborn</Name>
+    <Punchline>For those who click their own buttons, but sometimes click the wrong ones.</Punchline>
+    <AssemblyName>NoSillyReborn</AssemblyName>
+    <Version>0.0.0.1</Version>
+    <PackageProjectUrl>https://github.com/FFXIV-CombatReborn/NoSillyReborn</PackageProjectUrl>
+    <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
+    <IsPackable>false</IsPackable>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ECommons" Version="3.1.0.29" />
+  </ItemGroup>
+
+<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+	<OutputPath>$(SolutionDir)\bin\$(Configuration)</OutputPath>
+	<NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+	<OutputPath>$(SolutionDir)\bin\$(Configuration)</OutputPath>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	<NoWarn>1591</NoWarn>
+  </PropertyGroup>
+
+    <ItemGroup>
+		<PackageReference Update="DalamudPackager" Version="14.0.2" />
+	</ItemGroup>
+
+  <!-- Reference the source generator so ActionID / StatusID enums are auto-generated -->
+  <ItemGroup>
+    <ProjectReference Include="..\NoSillyReborn.SourceGenerators\NoSillyReborn.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="DotNet.ReproducibleBuilds" Version="2.0.2" />
+  </ItemGroup>
+
+  <!-- Prune unwanted DLLs from output -->
+    <Target Name="PruneOutputDlls" AfterTargets="ResolveReferences">
+        <ItemGroup>
+            <!-- Keep only these DLLs in the copy-local list -->
+            <_KeepDlls Include="@(ReferenceCopyLocalPaths)" Condition="&#xD;&#xA;	'%(Filename)' == 'NoSillyReborn' or&#xD;&#xA;	'%(Filename)' == 'ECommons'&#xD;&#xA;" />
+            <!-- Remove everything else -->
+            <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="!('%(Filename)' == 'NoSillyReborn' or '%(Filename)' == 'ECommons')" />
+            <!-- Re-add only the kept set -->
+            <ReferenceCopyLocalPaths Include="@(_KeepDlls)" />
+        </ItemGroup>
+    </Target>
+</Project>
+

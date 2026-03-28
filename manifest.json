@@ -1,0 +1,30 @@
+{
+    "Author": "The Combat Reborn Team",
+    "Name": "No Silly Reborn",
+    "InternalName": "NoSillyReborn",
+    "RepoUrl": "https://github.com/FFXIV-CombatReborn/NoSillyReborn",
+    "Description": "No Silly Reborn intercepts your action inputs during combat and replaces incorrect actions with the correct ones based on your current job state.",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 14,
+    "TestingDalamudApiLevel": 14,
+    "Tags": [
+        "combat",
+        "overlay",
+        "rotation",
+        "auto",
+        "pve",
+        "pvp",
+        "high end"
+    ],
+    "CategoryTags": [
+        "jobs"
+    ],
+    "LoadRequiredState": 0,
+    "LoadSync": false,
+    "CanUnloadAsync": false,
+    "LoadPriority": 0,
+    "IsTestingExclusive": false,
+    "IconUrl": "https://raw.githubusercontent.com/FFXIV-CombatReborn/RebornAssets/main/IconAssets/NSR_Icon.png",
+    "Punchline": "For those who click their own buttons, but sometimes click the wrong ones.",
+    "AcceptsFeedback": true
+}
