@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Dalamud.NET.Sdk/14.0.2">
+<Project Sdk="Dalamud.NET.Sdk/15.0.0">
   <PropertyGroup>
     <Description>No Silly Reborn intercepts your action inputs during combat and replaces incorrect actions with the correct ones based on your current job state</Description>
     <Author>The Combat Reborn Team</Author>
@@ -14,7 +14,7 @@
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ECommons" Version="3.1.0.29" />
+    <PackageReference Include="ECommons" Version="3.2.0.6" />
   </ItemGroup>
 
 <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
@@ -28,7 +28,7 @@
   </PropertyGroup>
 
     <ItemGroup>
-		<PackageReference Update="DalamudPackager" Version="14.0.2" />
+		<PackageReference Update="DalamudPackager" Version="15.0.0" />
 	</ItemGroup>
 
   <!-- Reference the source generator so ActionID / StatusID enums are auto-generated -->
