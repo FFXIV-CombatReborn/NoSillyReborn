@@ -15,56 +15,46 @@ namespace NoSillyReborn.SourceGenerators;
 ///   <item><c>TerritoryContentType.g.cs</c> – content/duty category</item>
 ///   <item><c>OpCode.g.cs</c>     – network packet opcodes</item>
 /// </list>
-///
-/// The embedded resource data (<c>Properties/Resources.resx</c>) is a verbatim
-/// copy of the same file from RotationSolverReborn.  When the game patches and
-/// RSR regenerates their resources, simply drop in the updated resx and rebuild.
-///
-/// NOTE: The <c>Action</c>, <c>DutyAction</c>, and <c>Rotation</c> resources in
-/// the resx contain generated rotation base-class code that depends on
-/// RSR.Basic types (<c>IBaseAction</c>, <c>CustomRotation</c>, etc.) which are
-/// not present in NoSillyReborn.  Those resources are intentionally not emitted.
-/// </summary>
 [Generator(LanguageNames.CSharp)]
 public class StaticCodeGenerator : IIncrementalGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
-        var provider = context.SyntaxProvider.CreateSyntaxProvider(
-            (s, _) => s is ClassDeclarationSyntax,
-            (c, _) => (ClassDeclarationSyntax)c.Node).Where(i => i is not null);
+	public void Initialize(IncrementalGeneratorInitializationContext context)
+	{
+		var provider = context.SyntaxProvider.CreateSyntaxProvider(
+			(s, _) => s is ClassDeclarationSyntax,
+			(c, _) => (ClassDeclarationSyntax)c.Node).Where(i => i is not null);
 
-        var compilation = context.CompilationProvider.Combine(provider.Collect());
+		var compilation = context.CompilationProvider.Combine(provider.Collect());
 
-        context.RegisterSourceOutput(compilation, (spc, _) => Execute(spc));
-    }
+		context.RegisterSourceOutput(compilation, (spc, _) => Execute(spc));
+	}
 
-    private static void Execute(SourceProductionContext context)
-    {
-        try
-        {
-            GenerateStatusID(context);
-            GenerateActionID(context);
-            GenerateActionCate(context);
-            GenerateContentType(context);
-        }
-        catch (Exception ex)
-        {
-            context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
-                "NSR0001",
-                "Source Generation Error",
-                $"An error occurred during source generation: {ex.Message}",
-                "SourceGenerator",
-                DiagnosticSeverity.Error,
-                isEnabledByDefault: true), Location.None));
-        }
-    }
+	private static void Execute(SourceProductionContext context)
+	{
+		try
+		{
+			GenerateStatusID(context);
+			GenerateActionID(context);
+			GenerateActionCate(context);
+			GenerateContentType(context);
+		}
+		catch (Exception ex)
+		{
+			context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
+				"NSR0001",
+				"Source Generation Error",
+				$"An error occurred during source generation: {ex.Message}",
+				"SourceGenerator",
+				DiagnosticSeverity.Error,
+				isEnabledByDefault: true), Location.None));
+		}
+	}
 
-    // ── Enum generators ───────────────────────────────────────────────────
+	// ── Enum generators ───────────────────────────────────────────────────
 
-    private static void GenerateStatusID(SourceProductionContext context)
-    {
-        var code = $$"""
+	private static void GenerateStatusID(SourceProductionContext context)
+	{
+		var code = $$"""
             namespace NoSillyReborn.Data;
 
             /// <summary>
@@ -80,12 +70,12 @@ public class StaticCodeGenerator : IIncrementalGenerator
             }
             """;
 
-        context.AddSource("StatusID.g.cs", code);
-    }
+		context.AddSource("StatusID.g.cs", code);
+	}
 
-    private static void GenerateActionID(SourceProductionContext context)
-    {
-        var code = $$"""
+	private static void GenerateActionID(SourceProductionContext context)
+	{
+		var code = $$"""
             namespace NoSillyReborn.Data;
 
             /// <summary>
@@ -101,12 +91,12 @@ public class StaticCodeGenerator : IIncrementalGenerator
             }
             """;
 
-        context.AddSource("ActionID.g.cs", code);
-    }
+		context.AddSource("ActionID.g.cs", code);
+	}
 
-    private static void GenerateActionCate(SourceProductionContext context)
-    {
-        var code = $$"""
+	private static void GenerateActionCate(SourceProductionContext context)
+	{
+		var code = $$"""
             namespace NoSillyReborn.Data;
 
             /// <summary>
@@ -121,12 +111,12 @@ public class StaticCodeGenerator : IIncrementalGenerator
             }
             """;
 
-        context.AddSource("ActionCate.g.cs", code);
-    }
+		context.AddSource("ActionCate.g.cs", code);
+	}
 
-    private static void GenerateContentType(SourceProductionContext context)
-    {
-        var code = $$"""
+	private static void GenerateContentType(SourceProductionContext context)
+	{
+		var code = $$"""
             namespace NoSillyReborn.Data;
 
             /// <summary>
@@ -141,6 +131,6 @@ public class StaticCodeGenerator : IIncrementalGenerator
             }
             """;
 
-        context.AddSource("TerritoryContentType.g.cs", code);
-    }
+		context.AddSource("TerritoryContentType.g.cs", code);
+	}
 }

@@ -6,62 +6,69 @@ namespace NoSillyReborn.GameData.Getters;
 /// Class responsible for getting and processing items from the game data.
 /// </summary>
 internal class ItemGetter(Lumina.GameData gameData)
-    : ExcelRowGetter<Item>(gameData)
+	: ExcelRowGetter<Item>(gameData)
 {
-    /// <summary>
-    /// Gets the list of added item names.
-    /// </summary>
-    public List<string> AddedNames { get; } = new List<string>();
+	/// <summary>
+	/// Gets the list of added item names.
+	/// </summary>
+	public List<string> AddedNames { get; } = new List<string>();
 
-    /// <summary>
-    /// Clears the list of added item names before creating the list of items.
-    /// </summary>
-    protected override void BeforeCreating()
-    {
-        AddedNames.Clear();
-        base.BeforeCreating();
-    }
+	/// <summary>
+	/// Clears the list of added item names before creating the list of items.
+	/// </summary>
+	protected override void BeforeCreating()
+	{
+		AddedNames.Clear();
+		base.BeforeCreating();
+	}
 
-    /// <summary>
-    /// Determines whether the specified item should be added to the list.
-    /// </summary>
-    /// <param name="item">The item to check.</param>
-    /// <returns>True if the item should be added; otherwise, false.</returns>
-    protected override bool AddToList(Item item)
-    {
-        if (item.ItemSearchCategory.RowId != 43) return false;
-        if (item.FilterGroup is not 10 and not 16 and not 19) return false;
+	/// <summary>
+	/// Determines whether the specified item should be added to the list.
+	/// </summary>
+	/// <param name="item">The item to check.</param>
+	/// <returns>True if the item should be added; otherwise, false.</returns>
+	protected override bool AddToList(Item item)
+	{
+		if (item.ItemSearchCategory.RowId != 43)
+		{
+			return false;
+		}
 
-        return true;
-    }
+		if (item.FilterGroup is not 10 and not 16 and not 19)
+		{
+			return false;
+		}
 
-    /// <summary>
-    /// Converts the specified item to its code representation.
-    /// </summary>
-    /// <param name="item">The item to convert.</param>
-    /// <returns>The code representation of the item.</returns>
-    protected override string ToCode(Item item)
-    {
-        var name = item.Singular.ToString().ToPascalCase();
-        if (AddedNames.Contains(name))
-        {
-            name += $"_{item.RowId}";
-        }
-        else
-        {
-            AddedNames.Add(name);
-        }
+		return true;
+	}
 
-        var desc = item.Description.ToString() ?? string.Empty;
+	/// <summary>
+	/// Converts the specified item to its code representation.
+	/// </summary>
+	/// <param name="item">The item to convert.</param>
+	/// <returns>The code representation of the item.</returns>
+	protected override string ToCode(Item item)
+	{
+		var name = item.Singular.ToString().ToPascalCase();
+		if (AddedNames.Contains(name))
+		{
+			name += $"_{item.RowId}";
+		}
+		else
+		{
+			AddedNames.Add(name);
+		}
 
-        // Sanitize the description to remove invalid XML tags
-        desc = Util.SanitizeXmlDescription(desc);
+		var desc = item.Description.ToString() ?? string.Empty;
 
-        desc = $"<para>{desc.Replace("\n", "</para>\n/// <para>")}</para>";
+		// Sanitize the description to remove invalid XML tags
+		desc = Util.SanitizeXmlDescription(desc);
 
-        var descName = $"<see href=\"https://garlandtools.org/db/#item/{item.RowId}\"><strong>{item.Name.ToString()}</strong></see> [{item.RowId}]";
+		desc = $"<para>{desc.Replace("\n", "</para>\n/// <para>")}</para>";
 
-        return $$"""
+		var descName = $"<see href=\"https://garlandtools.org/db/#item/{item.RowId}\"><strong>{item.Name.ToString()}</strong></see> [{item.RowId}]";
+
+		return $$"""
         private readonly Lazy<IBaseItem> _{{name}}Creator = new(() => new BaseItem({{item.RowId}}));
 
         /// <summary>
@@ -70,5 +77,5 @@ internal class ItemGetter(Lumina.GameData gameData)
         /// </summary>
         public IBaseItem {{name}} => _{{name}}Creator.Value;
         """;
-    }
+	}
 }

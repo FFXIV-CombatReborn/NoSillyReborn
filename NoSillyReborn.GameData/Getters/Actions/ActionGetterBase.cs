@@ -13,113 +13,150 @@ namespace NoSillyReborn.GameData.Getters.Actions;
 internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGetter<Action>(gameData)
 {
 
-    /// <summary>
-    /// Gets the list of added names.
-    /// </summary>
-    public List<string> AddedNames { get; } = [];
+	/// <summary>
+	/// Gets the list of added names.
+	/// </summary>
+	public List<string> AddedNames { get; } = [];
 
-    private string[] notCombatJobs = [];
+	private string[] notCombatJobs = [];
 
-    /// <summary>
-    /// Called before creating the list of items.
-    /// </summary>
-    protected override void BeforeCreating()
-    {
-        AddedNames.Clear();
-        var classJobs = _gameData.GetExcelSheet<ClassJob>()!;
-        var tmp = new List<string>();
-        foreach (var c in classJobs)
-        {
-            if (c.ClassJobCategory.RowId is 32 or 33)
-            {
-                tmp.Add(c.Abbreviation.ToString());
-            }
-        }
-        notCombatJobs = [.. tmp];
-        base.BeforeCreating();
-    }
+	/// <summary>
+	/// Called before creating the list of items.
+	/// </summary>
+	protected override void BeforeCreating()
+	{
+		AddedNames.Clear();
+		var classJobs = _gameData.GetExcelSheet<ClassJob>()!;
+		var tmp = new List<string>();
+		foreach (var c in classJobs)
+		{
+			if (c.ClassJobCategory.RowId is 32 or 33)
+			{
+				tmp.Add(c.Abbreviation.ToString());
+			}
+		}
+		notCombatJobs = [.. tmp];
+		base.BeforeCreating();
+	}
 
-    /// <summary>
-    /// Determines whether the specified action should be added to the list.
-    /// </summary>
-    /// <param name="item">The action to check.</param>
-    /// <returns>True if the action should be added; otherwise, false.</returns>
-    protected override bool AddToList(Action item)
-    {
-        if (item.RowId is 3 or 120) return true; // Sprint and cure.
-        if (item.RowId is 16538 or 16537) return true;
-        if (item.ClassJobCategory.RowId == 0) return false;
+	/// <summary>
+	/// Determines whether the specified action should be added to the list.
+	/// </summary>
+	/// <param name="item">The action to check.</param>
+	/// <returns>True if the action should be added; otherwise, false.</returns>
+	protected override bool AddToList(Action item)
+	{
+		if (item.RowId is 3 or 120)
+		{
+			return true; // Sprint and cure.
+		}
 
-        var name = item.Name.ToString();
-        if (string.IsNullOrEmpty(name)) return false;
-        var allAscii = true;
-        foreach (var c in name)
-        {
-            if (!char.IsAscii(c)) { allAscii = false; break; }
-        }
-        if (!allAscii) return false;
-        if (item.Icon is 0 or 405 or 784) return false;
+		if (item.RowId is 16538 or 16537)
+		{
+			return true;
+		}
 
-        if (item.ActionCategory.RowId is 6 or 7 or 8 or 12 or > 14 or 9) return false;
+		if (item.ClassJobCategory.RowId == 0)
+		{
+			return false;
+		}
 
-        if (item.CooldownGroup == 0 && item.AdditionalCooldownGroup == 0 && item.ClassJobCategory.RowId == 29) return false;
-        if (!item.ClassJobCategory.IsValid) return false;
-        var category = item.ClassJobCategory.Value;
+		var name = item.Name.ToString();
+		if (string.IsNullOrEmpty(name))
+		{
+			return false;
+		}
 
-        if (category.RowId == 1) return true;
+		var allAscii = true;
+		foreach (var c in name)
+		{
+			if (!char.IsAscii(c))
+			{ allAscii = false; break; }
+		}
+		if (!allAscii)
+		{
+			return false;
+		}
 
-        var isNotCombat = false;
-        for (var i = 0; i < notCombatJobs.Length; i++)
-        {
-            var jobName = notCombatJobs[i];
-            var val = (bool?)category.GetType().GetRuntimeProperty(jobName)?.GetValue(category) ?? false;
-            if (val)
-            {
-                isNotCombat = true;
-                break;
-            }
-        }
-        if (isNotCombat)
-        {
-            return false;
-        }
+		if (item.Icon is 0 or 405 or 784)
+		{
+			return false;
+		}
 
-        return true;
-    }
+		if (item.ActionCategory.RowId is 6 or 7 or 8 or 12 or > 14 or 9)
+		{
+			return false;
+		}
 
-    /// <summary>
-    /// Gets the name of the specified action.
-    /// </summary>
-    /// <param name="item">The action.</param>
-    /// <returns>The name of the action.</returns>
-    protected string GetName(Action item)
-    {
-        var name = item.Name.ToString().ToPascalCase() + (item.IsPvP ? "PvP" : "PvE");
+		if (item.CooldownGroup == 0 && item.AdditionalCooldownGroup == 0 && item.ClassJobCategory.RowId == 29)
+		{
+			return false;
+		}
 
-        if (AddedNames.Contains(name))
-        {
-            name += "_" + item.RowId;
-        }
-        else
-        {
-            AddedNames.Add(name);
-        }
-        return name;
-    }
+		if (!item.ClassJobCategory.IsValid)
+		{
+			return false;
+		}
 
-    /// <summary>
-    /// Gets the description of the specified action.
-    /// </summary>
-    /// <param name="item">The action.</param>
-    /// <returns>The description of the action.</returns>
-    protected string GetDesc(Action item)
-    {
-        var transient = _gameData.GetExcelSheet<ActionTransient>()?.GetRow(item.RowId);
-        var desc = transient?.Description.ToString() ?? string.Empty;
+		var category = item.ClassJobCategory.Value;
 
-        // Sanitize the description to remove invalid XML tags
-        desc = Util.SanitizeXmlDescription(desc);
+		if (category.RowId == 1)
+		{
+			return true;
+		}
 
-        return $"<para>{desc.Replace("\n", "</para>\n/// <para>")}</para>";
-    }
+		var isNotCombat = false;
+		for (var i = 0; i < notCombatJobs.Length; i++)
+		{
+			var jobName = notCombatJobs[i];
+			var val = (bool?)category.GetType().GetRuntimeProperty(jobName)?.GetValue(category) ?? false;
+			if (val)
+			{
+				isNotCombat = true;
+				break;
+			}
+		}
+		if (isNotCombat)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/// <summary>
+	/// Gets the name of the specified action.
+	/// </summary>
+	/// <param name="item">The action.</param>
+	/// <returns>The name of the action.</returns>
+	protected string GetName(Action item)
+	{
+		var name = item.Name.ToString().ToPascalCase() + (item.IsPvP ? "PvP" : "PvE");
+
+		if (AddedNames.Contains(name))
+		{
+			name += "_" + item.RowId;
+		}
+		else
+		{
+			AddedNames.Add(name);
+		}
+		return name;
+	}
+
+	/// <summary>
+	/// Gets the description of the specified action.
+	/// </summary>
+	/// <param name="item">The action.</param>
+	/// <returns>The description of the action.</returns>
+	protected string GetDesc(Action item)
+	{
+		var transient = _gameData.GetExcelSheet<ActionTransient>()?.GetRow(item.RowId);
+		var desc = transient?.Description.ToString() ?? string.Empty;
+
+		// Sanitize the description to remove invalid XML tags
+		desc = Util.SanitizeXmlDescription(desc);
+
+		return $"<para>{desc.Replace("\n", "</para>\n/// <para>")}</para>";
+	}
 }

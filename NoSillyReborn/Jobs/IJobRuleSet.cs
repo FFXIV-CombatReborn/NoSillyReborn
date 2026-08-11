@@ -8,12 +8,12 @@ namespace NoSillyReborn.Jobs;
 /// </summary>
 public interface IJobRuleSet
 {
-    /// <summary>The ClassJob row ID this rule-set applies to.</summary>
-    JobID JobId { get; }
+	/// <summary>The ClassJob row ID this rule-set applies to.</summary>
+	JobID JobId { get; }
 
-    /// <summary>
-    /// Returns all intercept rules for this job.
-    /// Rules are evaluated in order; the first matching rule wins.
-    /// </summary>
-    IReadOnlyList<ActionRule> Rules { get; }
+	/// <summary>
+	/// Returns all intercept rules for this job.
+	/// Rules are evaluated in order; the first matching rule wins.
+	/// </summary>
+	IReadOnlyList<ActionRule> Rules { get; }
 }
