@@ -1,136 +1,190 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Microsoft.CodeAnalysis;
 
 namespace NoSillyReborn.SourceGenerators;
 
 /// <summary>
-/// Roslyn incremental source generator that produces all FFXIV game-data enums
-/// for NoSillyReborn from the embedded resource file.
-///
-/// Generated files (all in <c>NoSillyReborn.Data</c>):
-/// <list type="bullet">
-///   <item><c>StatusID.g.cs</c>   – every status buff/debuff ID</item>
-///   <item><c>ActionID.g.cs</c>   – every action ID</item>
-///   <item><c>ActionCate.g.cs</c> – action category (Weaponskill, Ability, Spell, …)</item>
-///   <item><c>TerritoryContentType.g.cs</c> – content/duty category</item>
-///   <item><c>OpCode.g.cs</c>     – network packet opcodes</item>
-/// </list>
+/// A source generator that generates static code for various enums.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public class StaticCodeGenerator : IIncrementalGenerator
 {
+	/// <summary>
+	/// Initializes the generator with the provided context.
+	/// </summary>
+	/// <param name="context">The initialization context.</param>
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
-		var provider = context.SyntaxProvider.CreateSyntaxProvider(
-			(s, _) => s is ClassDeclarationSyntax,
-			(c, _) => (ClassDeclarationSyntax)c.Node).Where(i => i is not null);
-
-		var compilation = context.CompilationProvider.Combine(provider.Collect());
-
-		context.RegisterSourceOutput(compilation, (spc, _) => Execute(spc));
+		context.RegisterPostInitializationOutput(Execute);
 	}
 
-	private static void Execute(SourceProductionContext context)
+	private static void Execute(IncrementalGeneratorPostInitializationContext context)
 	{
 		try
 		{
-			GenerateStatusID(context);
+			GenerateStatus(context);
 			GenerateActionID(context);
-			GenerateActionCate(context);
 			GenerateContentType(context);
+			GenerateActionCate(context);
+			GenerateBNpcNameID(context);
+			GenerateOpCode(context);
+			GenerateTraitID(context);
+			GenerateGameMetadata(context);
 		}
 		catch (Exception ex)
 		{
-			context.ReportDiagnostic(Diagnostic.Create(new DiagnosticDescriptor(
-				"NSR0001",
-				"Source Generation Error",
-				$"An error occurred during source generation: {ex.Message}",
-				"SourceGenerator",
-				DiagnosticSeverity.Error,
-				isEnabledByDefault: true), Location.None));
+			context.AddSource("SourceGenerationError.g.cs", $"#error Source generation failed: {ex.Message.Replace('\r', ' ').Replace('\n', ' ')}");
 		}
 	}
 
-	// ── Enum generators ───────────────────────────────────────────────────
-
-	private static void GenerateStatusID(SourceProductionContext context)
+	private static void GenerateOpCode(IncrementalGeneratorPostInitializationContext context)
 	{
 		var code = $$"""
-            namespace NoSillyReborn.Data;
+			namespace NoSillyReborn.Engine.Data;
 
-            /// <summary>
-            /// FFXIV status (buff/debuff) IDs – generated from game data.
-            /// Use <see cref="NoSillyReborn.Helpers.StatusHelper"/> to check whether the
-            /// local player has a given status.
-            /// </summary>
-            public enum StatusID : ushort
-            {
-                /// <summary>No status.</summary>
-                None = 0,
-            {{Properties.Resources.StatusId.Table()}}
-            }
-            """;
+			/// <summary>
+			/// The opcode
+			/// </summary>
+			public enum OpCode : ushort
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.OpCode.Value.Table()}}
+			}
+			""";
+
+		context.AddSource("OpCode.g.cs", code);
+	}
+
+	private static void GenerateStatus(IncrementalGeneratorPostInitializationContext context)
+	{
+		var code = $$"""
+			namespace NoSillyReborn.Engine.Data;
+
+			/// <summary>
+			/// The id of the status.
+			/// </summary>
+			public enum StatusID : ushort
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.Status.Value.Table()}}
+			}
+			""";
 
 		context.AddSource("StatusID.g.cs", code);
 	}
 
-	private static void GenerateActionID(SourceProductionContext context)
+	private static void GenerateContentType(IncrementalGeneratorPostInitializationContext context)
 	{
 		var code = $$"""
-            namespace NoSillyReborn.Data;
+			namespace NoSillyReborn.Engine.Data;
 
-            /// <summary>
-            /// FFXIV action IDs – generated from game data.
-            /// PvE actions follow the naming convention <c>&lt;Name&gt;PvE</c>
-            /// (e.g. <see cref="BurstShotPvE"/>); PvP actions use <c>&lt;Name&gt;PvP</c>.
-            /// </summary>
-            public enum ActionID : uint
-            {
-                /// <summary>No action.</summary>
-                None = 0,
-            {{Properties.Resources.ActionId.Table()}}
-            }
-            """;
+			/// <summary>
+			///
+			/// </summary>
+			public enum TerritoryContentType : byte
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.ContentType.Value.Table()}}
+			}
+			""";
 
-		context.AddSource("ActionID.g.cs", code);
+		context.AddSource("TerritoryContentType.g.cs", code);
 	}
 
-	private static void GenerateActionCate(SourceProductionContext context)
+	private static void GenerateActionCate(IncrementalGeneratorPostInitializationContext context)
 	{
 		var code = $$"""
-            namespace NoSillyReborn.Data;
+			namespace NoSillyReborn.Engine.Data;
 
-            /// <summary>
-            /// FFXIV action category (Weaponskill, Ability, Spell, etc.) – generated from game data.
-            /// Returned by <see cref="Lumina.Excel.Sheets.Action.ActionCategory"/>.
-            /// </summary>
-            public enum ActionCate : byte
-            {
-                /// <summary>No category.</summary>
-                None = 0,
-            {{Properties.Resources.ActionCategory.Table()}}
-            }
-            """;
+			/// <summary>
+			///
+			/// </summary>
+			public enum ActionCate : byte
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.ActionCategory.Value.Table()}}
+			}
+			""";
 
 		context.AddSource("ActionCate.g.cs", code);
 	}
 
-	private static void GenerateContentType(SourceProductionContext context)
+	private static void GenerateBNpcNameID(IncrementalGeneratorPostInitializationContext context)
 	{
 		var code = $$"""
-            namespace NoSillyReborn.Data;
+			namespace NoSillyReborn.Engine.Data;
 
-            /// <summary>
-            /// FFXIV territory content type (Dungeons, Raids, PvP, etc.) – generated from game data.
-            /// Matches the <c>ContentType</c> column of the <c>TerritoryType</c> Excel sheet.
-            /// </summary>
-            public enum TerritoryContentType : byte
-            {
-                /// <summary>No content type.</summary>
-                None = 0,
-            {{Properties.Resources.ContentType.Table()}}
-            }
-            """;
+			/// <summary>
+			/// The id of the BNpc name.
+			/// </summary>
+			public enum NPCName : uint
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.BNpcName.Value.Table()}}
+			}
+			""";
 
-		context.AddSource("TerritoryContentType.g.cs", code);
+		context.AddSource("BNpcNameID.g.cs", code);
+	}
+
+	private static void GenerateActionID(IncrementalGeneratorPostInitializationContext context)
+	{
+		var code = $$"""
+			namespace NoSillyReborn.Engine.Data;
+
+			/// <summary>
+			/// The id of the status.
+			/// </summary>
+			public enum ActionID : uint
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.ActionId.Value.Table()}}
+			}
+			""";
+
+		context.AddSource("ActionID.g.cs", code);
+	}
+
+	private static void GenerateTraitID(IncrementalGeneratorPostInitializationContext context)
+	{
+		var code = $$"""
+			namespace NoSillyReborn.Engine.Data;
+
+			/// <summary>
+			/// The id of the combat trait.
+			/// </summary>
+			public enum TraitID : uint
+			{
+				/// <summary>
+				///
+				/// </summary>
+				None = 0,
+			{{Properties.TraitId.Value.Table()}}
+			}
+			""";
+
+		context.AddSource("TraitID.g.cs", code);
+	}
+
+	private static void GenerateGameMetadata(IncrementalGeneratorPostInitializationContext context)
+	{
+		context.AddSource("GameMetadata.g.cs", Properties.GameMetadata.Value);
 	}
 }

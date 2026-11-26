@@ -1,0 +1,93 @@
+using Lumina.Excel.Sheets;
+using System.Text;
+
+namespace NoSillyReborn.GameData.Getters;
+
+internal class BNpcNameGetter(Lumina.GameData gameData)
+	: ExcelRowGetter<BNpcName>(gameData)
+{
+	private readonly HashSet<string> _addedNames = [];
+
+	/// <summary>
+	/// Called before creating the list of items. Clears the added names set.
+	/// </summary>
+	protected override void BeforeCreating()
+	{
+		_addedNames.Clear();
+		base.BeforeCreating();
+	}
+
+	/// <summary>
+	/// Determines whether the specified BNpcName should be added to the list.
+	/// </summary>
+	/// <param name="item">The BNpcName item to check.</param>
+	/// <returns>True if the BNpcName should be added; otherwise, false.</returns>
+	protected override bool AddToList(BNpcName item)
+	{
+		var name = item.Singular.ToString();
+		if (string.IsNullOrEmpty(name))
+		{
+			return false;
+		}
+
+		var allAscii = true;
+		foreach (var c in name)
+		{
+			if (!char.IsAscii(c))
+			{
+				allAscii = false;
+				break;
+			}
+		}
+
+		return allAscii;
+	}
+
+	/// <summary>
+	/// Converts the specified BNpcName to its code representation.
+	/// </summary>
+	/// <param name="item">The BNpcName item to convert.</param>
+	/// <returns>The code representation of the BNpcName.</returns>
+	protected override string ToCode(BNpcName item)
+	{
+		var name = item.Singular.ToString();
+		if (string.IsNullOrEmpty(name))
+		{
+			name = $"UnnamedNpc_{item.RowId}";
+		}
+		else
+		{
+			name = name.ToPascalCase();
+		}
+
+		if (string.IsNullOrWhiteSpace(name) || name == "_" || name.All(c => c == '_'))
+		{
+			return string.Empty;
+		}
+
+		if (!_addedNames.Add(name))
+		{
+			name += "_" + item.RowId.ToString();
+		}
+
+		if (name.StartsWith('_'))
+		{
+			name = "Npc" + name;
+		}
+
+		var plural = item.Plural.ToString();
+		var article = item.Article.ToString();
+
+		var displayName = item.Singular.ToString().Replace("&", "and");
+
+		var sb = new StringBuilder();
+		sb.AppendLine($"""
+        /// <summary>
+        /// {item.RowId}
+        /// </summary>
+        """);
+		sb.AppendLine($"{name} = {item.RowId},");
+
+		return sb.ToString();
+	}
+}
