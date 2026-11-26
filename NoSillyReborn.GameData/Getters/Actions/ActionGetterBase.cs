@@ -3,13 +3,6 @@ using Action = Lumina.Excel.Sheets.Action;
 
 namespace NoSillyReborn.GameData.Getters.Actions;
 
-/// <summary>
-/// Abstract base class for getting action rows from the Excel sheet.
-/// </summary>
-/// <remarks>
-/// Initializes a new instance of the <see cref="ActionGetterBase"/> class.
-/// </remarks>
-/// <param name="gameData">The game data.</param>
 internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGetter<Action>(gameData)
 {
 
@@ -18,7 +11,7 @@ internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGet
 	/// </summary>
 	public List<string> AddedNames { get; } = [];
 
-	private string[] notCombatJobs = [];
+	private string[] _notCombatJobs = [];
 
 	/// <summary>
 	/// Called before creating the list of items.
@@ -35,7 +28,7 @@ internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGet
 				tmp.Add(c.Abbreviation.ToString());
 			}
 		}
-		notCombatJobs = [.. tmp];
+		_notCombatJobs = [.. tmp];
 		base.BeforeCreating();
 	}
 
@@ -48,7 +41,7 @@ internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGet
 	{
 		if (item.RowId is 3 or 120)
 		{
-			return true; // Sprint and cure.
+			return true;
 		}
 
 		if (item.RowId is 16538 or 16537)
@@ -106,9 +99,9 @@ internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGet
 		}
 
 		var isNotCombat = false;
-		for (var i = 0; i < notCombatJobs.Length; i++)
+		for (var i = 0; i < _notCombatJobs.Length; i++)
 		{
-			var jobName = notCombatJobs[i];
+			var jobName = _notCombatJobs[i];
 			var val = (bool?)category.GetType().GetRuntimeProperty(jobName)?.GetValue(category) ?? false;
 			if (val)
 			{
@@ -154,7 +147,6 @@ internal abstract class ActionGetterBase(Lumina.GameData gameData) : ExcelRowGet
 		var transient = _gameData.GetExcelSheet<ActionTransient>()?.GetRow(item.RowId);
 		var desc = transient?.Description.ToString() ?? string.Empty;
 
-		// Sanitize the description to remove invalid XML tags
 		desc = Util.SanitizeXmlDescription(desc);
 
 		return $"<para>{desc.Replace("\n", "</para>\n/// <para>")}</para>";

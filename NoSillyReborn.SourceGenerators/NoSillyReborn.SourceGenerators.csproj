@@ -1,31 +1,92 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<AssemblyName>NoSillyReborn.SourceGenerators</AssemblyName>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 		<Platforms>x64</Platforms>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<LangVersion>default</LangVersion>
-		<CopyLocalLockFileAssemblies>False</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.6.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="Properties\Resources.Designer.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>Resources.resx</DependentUpon>
-		</Compile>
+	  <Compile Update="Properties\Status.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>Status.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\ContentType.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>ContentType.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\ActionId.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>ActionId.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\ActionCategory.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>ActionCategory.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\BNpcName.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>BNpcName.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\OpCode.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>OpCode.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\TraitId.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>TraitId.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\GameMetadata.Designer.cs">
+		<DesignTime>True</DesignTime>
+		<AutoGen>True</AutoGen>
+		<DependentUpon>GameMetadata.resx</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Update="Properties\Resources.resx">
-			<Generator>ResXFileCodeGenerator</Generator>
-			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
+	  <EmbeddedResource Update="Properties\Status.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>Status.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\ContentType.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>ContentType.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\ActionId.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>ActionId.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\ActionCategory.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>ActionCategory.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\BNpcName.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>BNpcName.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\OpCode.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>OpCode.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\TraitId.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>TraitId.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\GameMetadata.resx">
+		<Generator>ResXFileCodeGenerator</Generator>
+		<LastGenOutput>GameMetadata.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
-
 </Project>
